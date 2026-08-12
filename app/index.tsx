@@ -1,181 +1,198 @@
+/**
+ * Phase 1 — the behavior deck.
+ *
+ * A stack of cards asks one behavioral question each. The user swipes right
+ * for "Yes" and left for "No", or presses the two buttons below the deck. The
+ * buttons are the pointer, keyboard, and screen-reader path; the gesture alone
+ * does not reach a keyboard.
+ *
+ * This screen runs full-bleed behind the status bar, so it uses `immersive`
+ * and applies the safe-area insets to the content column itself.
+ */
 import { Button } from '@rootnative/components/button'
-import { Card } from '@rootnative/components/card'
 import { Box, Column, Layout, Row } from '@rootnative/components/layout'
+import { LinearProgress } from '@rootnative/components/progress'
 import { Typography } from '@rootnative/components/typography'
-import { useTheme } from '@rootnative/core'
-import { ScrollView, StyleSheet } from 'react-native'
+import { useBreakpointValue, useTheme } from '@rootnative/core'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { StyleSheet } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
+import { DeckSummary } from '../components/DeckSummary'
+import { PawPattern } from '../components/PawPattern'
+import { SwipeCard, type SwipeCardHandle } from '../components/SwipeCard'
+import { TRAITS, type Trait } from '../data/traits'
+import { useCatImages } from '../hooks/useCatImages'
 import type { PurrfectTheme } from '../theme'
 
-/** One color role, drawn as a filled swatch with its own `on*` label. */
-function Swatch({
-  label,
-  color,
-  onColor,
-}: {
-  label: string
-  color: string
-  onColor: string
-}) {
-  const theme = useTheme<PurrfectTheme>()
-
-  return (
-    <Box
-      flex={1}
-      p="md"
-      bg={color}
-      style={{ borderRadius: theme.shape.cornerLarge, minHeight: 72 }}
-    >
-      <Typography variant="labelLarge" color={onColor}>
-        {label}
-      </Typography>
-      <Typography variant="labelSmall" color={onColor}>
-        {color}
-      </Typography>
-    </Box>
-  )
-}
-
-export default function ThemePreviewScreen() {
+export default function DeckScreen() {
   const theme = useTheme<PurrfectTheme>()
   const { colors, purrfect } = theme
+  const { cardStack } = purrfect
+
+  const insets = useSafeAreaInsets()
+  const { urls, failed, reload } = useCatImages(TRAITS.length)
+
+  const [index, setIndex] = useState(0)
+  const [acceptedIds, setAcceptedIds] = useState<string[]>([])
+  const topCard = useRef<SwipeCardHandle>(null)
+
+  // A phone is `compact`. A tablet, a split view, and a browser window are
+  // not, so the deck is capped and centred instead of filling the width.
+  const deckWidth = useBreakpointValue({
+    compact: 400,
+    medium: 440,
+    expanded: 460,
+  })
+
+  const done = index >= TRAITS.length
+  const visible = TRAITS.slice(index, index + cardStack.visibleDepth)
+
+  const accepted = useMemo(
+    () => TRAITS.filter((trait) => acceptedIds.includes(trait.id)),
+    [acceptedIds],
+  )
+
+  const handleDecide = useCallback((trait: Trait, isAccepted: boolean) => {
+    if (isAccepted) setAcceptedIds((ids) => [...ids, trait.id])
+    setIndex((current) => current + 1)
+  }, [])
+
+  const restart = useCallback(() => {
+    setAcceptedIds([])
+    setIndex(0)
+  }, [])
 
   return (
-    <Layout
-      // `Layout` defaults to the bottom edge only, so the top inset must be
-      // named. Without it the title renders under the status bar.
-      edges={['top', 'bottom']}
-      style={{ backgroundColor: colors.background }}
-    >
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <Column gap="lg">
-          <Column gap="xs">
-            <Typography variant="displaySmallEmphasized" color={colors.primary}>
-              Purrfect Match
-            </Typography>
-            <Typography variant="bodyLarge" color={colors.onSurfaceVariant}>
-              Warm Cattery theme preview. Every color comes from the theme.
-            </Typography>
-          </Column>
+    <Layout immersive style={[styles.root, { backgroundColor: colors.background }]}>
+      <PawPattern />
 
-          <Column gap="sm">
-            <Typography variant="titleMedium" color={colors.onSurface}>
-              Brand roles
-            </Typography>
-            <Row gap="sm">
-              <Swatch
-                label="Primary"
-                color={colors.primary}
-                onColor={colors.onPrimary}
-              />
-              <Swatch
-                label="Secondary"
-                color={colors.secondary}
-                onColor={colors.onSecondary}
-              />
-            </Row>
-            <Row gap="sm">
-              <Swatch
-                label="Tertiary"
-                color={colors.tertiary}
-                onColor={colors.onTertiary}
-              />
-              <Swatch
-                label="Error"
-                color={colors.error}
-                onColor={colors.onError}
-              />
-            </Row>
-          </Column>
+      <Column
+        gap="md"
+        style={[
+          styles.content,
+          { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 },
+        ]}
+      >
+        <Column gap="sm" style={[styles.column, { maxWidth: deckWidth }]}>
+          <Row align="center" style={styles.titleRow}>
+            <Column style={styles.titleText}>
+              <Typography variant="headlineSmallEmphasized" color={colors.primary}>
+                Purrfect Match
+              </Typography>
+              <Typography variant="bodySmall" color={colors.onSurfaceVariant}>
+                {done
+                  ? 'Every trait answered.'
+                  : `Trait ${index + 1} of ${TRAITS.length}`}
+              </Typography>
+            </Column>
 
-          <Column gap="sm">
-            <Typography variant="titleMedium" color={colors.onSurface}>
-              Swipe decisions
-            </Typography>
-            <Row gap="sm">
-              <Swatch
-                label="Yes — sage"
-                color={purrfect.yes.color}
-                onColor={purrfect.yes.on}
-              />
-              <Swatch
-                label="No — rose"
-                color={purrfect.no.color}
-                onColor={purrfect.no.on}
-              />
-            </Row>
-          </Column>
+            {failed ? (
+              <Button variant="text" leadingIcon="refresh" onPress={reload}>
+                Photos
+              </Button>
+            ) : null}
+          </Row>
 
-          <Column gap="sm">
-            <Typography variant="titleMedium" color={colors.onSurface}>
-              Surface ramp
-            </Typography>
-            <Row gap="sm">
-              <Swatch
-                label="Container"
-                color={colors.surfaceContainer}
-                onColor={colors.onSurface}
-              />
-              <Swatch
-                label="High"
-                color={colors.surfaceContainerHigh}
-                onColor={colors.onSurface}
-              />
-              <Swatch
-                label="Highest"
-                color={colors.surfaceContainerHighest}
-                onColor={colors.onSurface}
-              />
-            </Row>
-          </Column>
-
-          <Column gap="sm">
-            <Typography variant="titleMedium" color={colors.onSurface}>
-              Type scale
-            </Typography>
-            <Card variant="filled">
-              <Card.Content>
-                <Typography variant="headlineMediumEmphasized">
-                  Baloo 2 headline
-                </Typography>
-                <Typography
-                  variant="bodyMedium"
-                  color={colors.onSurfaceVariant}
-                >
-                  Nunito Sans body text. The rounded display face carries the
-                  headlines. The neutral face carries everything else.
-                </Typography>
-              </Card.Content>
-              <Card.Actions align="start">
-                <Button
-                  variant="tonal"
-                  containerColor={purrfect.no.container}
-                  contentColor={purrfect.no.onContainer}
-                  leadingIcon="close"
-                >
-                  Nope
-                </Button>
-                <Button
-                  variant="filled"
-                  containerColor={purrfect.yes.color}
-                  contentColor={purrfect.yes.on}
-                  leadingIcon="heart"
-                >
-                  Yes
-                </Button>
-              </Card.Actions>
-            </Card>
-          </Column>
+          <LinearProgress
+            progress={index / TRAITS.length}
+            contentColor={colors.primary}
+            containerColor={colors.surfaceContainerHigh}
+          />
         </Column>
-      </ScrollView>
+
+        <Box style={styles.deckArea}>
+          {done ? (
+            <Box style={[styles.column, { maxWidth: deckWidth }]}>
+              <DeckSummary
+                accepted={accepted}
+                total={TRAITS.length}
+                onRestart={restart}
+              />
+            </Box>
+          ) : (
+            <Box style={[styles.stack, { maxWidth: deckWidth }]}>
+              {/* Reversed so the top card is the last sibling and paints above
+                  the rest. `depth` counts back from the top card at 0. */}
+              {[...visible].reverse().map((trait, position) => {
+                const depth = visible.length - 1 - position
+                return (
+                  <SwipeCard
+                    key={trait.id}
+                    ref={depth === 0 ? topCard : undefined}
+                    trait={trait}
+                    imageUri={urls[index + depth]}
+                    depth={depth}
+                    active={depth === 0}
+                    onDecide={handleDecide}
+                  />
+                )
+              })}
+            </Box>
+          )}
+        </Box>
+
+        {done ? null : (
+          <Row gap="sm" style={[styles.column, { maxWidth: deckWidth }]}>
+            <Button
+              variant="tonal"
+              size="l"
+              leadingIcon="close"
+              containerColor={purrfect.no.container}
+              contentColor={purrfect.no.onContainer}
+              style={styles.action}
+              onPress={() => topCard.current?.commit('left')}
+            >
+              No
+            </Button>
+            <Button
+              variant="filled"
+              size="l"
+              leadingIcon="heart"
+              containerColor={purrfect.yes.color}
+              contentColor={purrfect.yes.on}
+              style={styles.action}
+              onPress={() => topCard.current?.commit('right')}
+            >
+              Yes
+            </Button>
+          </Row>
+        )}
+      </Column>
     </Layout>
   )
 }
 
 const styles = StyleSheet.create({
-  scroll: {
-    padding: 20,
-    paddingBottom: 48,
-    gap: 16,
+  root: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  column: {
+    width: '100%',
+  },
+  titleRow: {
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  titleText: {
+    flexShrink: 1,
+  },
+  deckArea: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stack: {
+    flex: 1,
+    width: '100%',
+  },
+  action: {
+    flex: 1,
   },
 })

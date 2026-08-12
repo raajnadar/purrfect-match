@@ -31,7 +31,13 @@ export interface SwipeDecisionColors {
 
 /** Geometry for the layered card stack. */
 export interface CardStackTokens {
-  /** Vertical offset in px between one card and the card below it. */
+  /**
+   * Vertical offset in px between one card and the card below it.
+   *
+   * A scaled-down card is centred, so `scaleStep` already pulls its bottom
+   * edge up by `scaleStep * cardHeight / 2`. `offsetY` must be larger than
+   * that, or the card behind hides completely behind the top card.
+   */
   offsetY: number
   /** Scale step between one card and the card below it. */
   scaleStep: number
@@ -56,8 +62,10 @@ export interface PurrfectTokens {
 }
 
 const cardStack: CardStackTokens = {
-  offsetY: 14,
-  scaleStep: 0.05,
+  // At the ~610 px card height of a phone, a 0.04 step insets the card behind
+  // by about 12 px, so a 24 px offset leaves a 12 px sliver showing.
+  offsetY: 24,
+  scaleStep: 0.04,
   maxRotation: 12,
   swipeThreshold: 110,
   visibleDepth: 3,
