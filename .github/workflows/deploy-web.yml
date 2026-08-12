@@ -1,0 +1,60 @@
+name: Deploy web
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# GitHub Pages needs these three permissions to publish an artifact.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let one deploy finish before the next one starts.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Export the web bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Export the web bundle
+        # GitHub Pages serves the site from /<repository-name>, so the export
+        # must prefix every asset with that path. See app.config.js.
+        env:
+          EXPO_BASE_URL: /${{ github.event.repository.name }}
+        run: npx expo export --platform web
+
+      - name: Prepare the dist folder
+        run: |
+          # Jekyll hides folders that start with an underscore, such as _expo.
+          touch dist/.nojekyll
+          # GitHub Pages serves 404.html for a path that has no file.
+          cp dist/+not-found.html dist/404.html
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
