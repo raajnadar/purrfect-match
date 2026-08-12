@@ -31,7 +31,7 @@ export default function DeckScreen() {
   const { cardStack } = purrfect
 
   const insets = useSafeAreaInsets()
-  const { urls, failed, reload } = useCatImages(TRAITS.length)
+  const { urls, loading, failed, reload } = useCatImages(TRAITS.length)
 
   const [index, setIndex] = useState(0)
   const [acceptedIds, setAcceptedIds] = useState<string[]>([])
@@ -122,6 +122,7 @@ export default function DeckScreen() {
                     ref={depth === 0 ? topCard : undefined}
                     trait={trait}
                     imageUri={urls[index + depth]}
+                    imagesLoading={loading}
                     depth={depth}
                     active={depth === 0}
                     onDecide={handleDecide}

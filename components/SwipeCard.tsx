@@ -9,7 +9,7 @@
  *   1. depth    — the resting place in the stack (translateY + scale)
  *   2. exit     — the fly-off after a committed decision (translateX)
  *   3. drag     — the live finger position (`useSwipe().animatedStyle`)
- *   4. rotate   — rotation and rim color, both mapped from `swipeX`
+ *   4. rotate   — rotation, opacity, and rim color, all mapped from `swipeX`
  */
 import { useTheme } from '@rootnative/core'
 import { Motion, useInterpolatedStyle } from '@rootnative/inertia'
@@ -37,6 +37,13 @@ const FLY_DISTANCE = 700
 const RIM_WIDTH = 2
 
 /**
+ * Card opacity at the far end of the drag range. The card fades as it leaves
+ * the centre, which reads as the card letting go. It stays readable at the
+ * commit threshold — that point is only 40% of the way along the range.
+ */
+const DRAG_MIN_OPACITY = 0.5
+
+/**
  * Safety net for the fly-off. `onAnimationEnd` is the real signal and it also
  * fires under reduced motion, but a card that never reports back would stop
  * the deck for good. The timer guarantees the deck always advances.
@@ -51,6 +58,8 @@ export interface SwipeCardHandle {
 interface SwipeCardProps {
   trait: Trait
   imageUri?: string
+  /** True while the Cat API request is still running. */
+  imagesLoading?: boolean
   /** `0` is the top card. Higher numbers sit further back in the stack. */
   depth: number
   /** Only the top card takes input. */
@@ -60,7 +69,10 @@ interface SwipeCardProps {
 }
 
 export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
-  function SwipeCard({ trait, imageUri, depth, active, onDecide }, ref) {
+  function SwipeCard(
+    { trait, imageUri, imagesLoading, depth, active, onDecide },
+    ref,
+  ) {
     const theme = useTheme<PurrfectTheme>()
     const { colors, motion, purrfect, shape } = theme
     const { cardStack } = purrfect
@@ -111,6 +123,7 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
       swipe.swipeX,
       {
         rotate: [-cardStack.maxRotation, 0, cardStack.maxRotation],
+        opacity: [DRAG_MIN_OPACITY, 1, DRAG_MIN_OPACITY],
         borderColor: [purrfect.no.color, colors.outlineVariant, purrfect.yes.color],
       },
       { inputRange: [-rotationRange, 0, rotationRange] },
@@ -153,7 +166,11 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(
                   tiltStyle,
                 ]}
               >
-                <TraitCard trait={trait} imageUri={imageUri} />
+                <TraitCard
+                  trait={trait}
+                  imageUri={imageUri}
+                  imagesLoading={imagesLoading}
+                />
 
                 <DecisionBadge
                   decision="yes"

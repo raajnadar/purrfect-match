@@ -21,9 +21,19 @@ interface TraitCardProps {
   trait: Trait
   /** Photo URL. Undefined while the Cat API request is in flight or failed. */
   imageUri?: string
+  /**
+   * True while the Cat API request is still running. Without it an undefined
+   * `imageUri` is ambiguous — "not here yet" and "not coming" look the same,
+   * and the card shows the no-photo glyph the moment it mounts.
+   */
+  imagesLoading?: boolean
 }
 
-export function TraitCard({ trait, imageUri }: TraitCardProps) {
+export function TraitCard({
+  trait,
+  imageUri,
+  imagesLoading = false,
+}: TraitCardProps) {
   const theme = useTheme<PurrfectTheme>()
   const { colors, purrfect, shape } = theme
 
@@ -31,6 +41,10 @@ export function TraitCard({ trait, imageUri }: TraitCardProps) {
   const [broken, setBroken] = useState(false)
 
   const showPhoto = Boolean(imageUri) && !broken
+  // The skeleton covers both waits: the URL arriving, and the photo decoding.
+  const showSkeleton = imagesLoading || (showPhoto && !loaded)
+  // The paw glyph means "no photo is coming", so it waits for the request.
+  const showFallback = !imagesLoading && !showPhoto
 
   return (
     <Card
@@ -53,11 +67,9 @@ export function TraitCard({ trait, imageUri }: TraitCardProps) {
             />
           ) : null}
 
-          {showPhoto && !loaded ? (
-            <Skeleton style={StyleSheet.absoluteFill} />
-          ) : null}
+          {showSkeleton ? <Skeleton style={StyleSheet.absoluteFill} /> : null}
 
-          {!showPhoto ? (
+          {showFallback ? (
             <Box style={styles.fallback}>
               <MaterialCommunityIcons
                 name="paw"
