@@ -2,6 +2,7 @@
   "expo": {
     "name": "Purrfect Match",
     "slug": "purrfect-match",
+    "owner": "raajnadar",
     "scheme": "purrfect-match",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,10 +28,20 @@
       "expo-router"
     ],
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "output": "static"
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "8addb12e-f2ac-4e76-9f0f-4f83f16d8768"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8addb12e-f2ac-4e76-9f0f-4f83f16d8768"
     }
   }
 }
