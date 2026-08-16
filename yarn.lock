@@ -1732,30 +1732,30 @@
   dependencies:
     nanoid "^3.3.11"
 
-"@rootnative/components@0.0.0-alpha.9":
-  version "0.0.0-alpha.9"
-  resolved "https://registry.yarnpkg.com/@rootnative/components/-/components-0.0.0-alpha.9.tgz#ab0c36d95a23c048cdf24625e50c92369959c9d3"
-  integrity sha512-INE6OV2tvUjDn3bGiYXUyC3nzp21bbUsgSyTTZJuigKT2C3LL17z8SUXhSdoKrHsycZKmwt01/HHqYOFusjHmw==
+"@rootnative/components@0.0.0-alpha.13":
+  version "0.0.0-alpha.13"
+  resolved "https://registry.yarnpkg.com/@rootnative/components/-/components-0.0.0-alpha.13.tgz#48044a5cdc395536e2daa8e5a38c8e65d278a69f"
+  integrity sha512-tOyFbiD4At0IT2/f9DxgWA9z4gPOSRvvbXOe+aX77kouByQWa7OEJcPIy1vHRkIDyf2S1jJuihlzn7armqb7Og==
 
-"@rootnative/core@0.0.0-alpha.9":
-  version "0.0.0-alpha.9"
-  resolved "https://registry.yarnpkg.com/@rootnative/core/-/core-0.0.0-alpha.9.tgz#0ca8bf0c8a2d23e76e9290225e640952a42575d5"
-  integrity sha512-xstd5Ooo+42aS/n/kTHdgB/S/+0zzfqUGwnM8qj5UbdQHrFeumpgrB+wR6sVdE55ixdyRavXWMgylQohHQ+ZVg==
+"@rootnative/core@0.0.0-alpha.13":
+  version "0.0.0-alpha.13"
+  resolved "https://registry.yarnpkg.com/@rootnative/core/-/core-0.0.0-alpha.13.tgz#a11856912fd09be041d573e62e45b5b38817bb2a"
+  integrity sha512-pTIJawEMxBYRF4P5OwRvRM8USZxSCWqejvT1EunKh42Z2Zm8GBY0AZdKJMk5fpdokPlUtsWjRH5y7Eux4rR9jg==
 
-"@rootnative/inertia-gestures@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@rootnative/inertia-gestures/-/inertia-gestures-0.0.6.tgz#c53ead5facd7599ce2ca30c56f848b3723796ac4"
-  integrity sha512-nhrpvUFGHufOaiebWhRfNiDbfki44PyyRElwFViVzUQ4LNWGfy30b6GpQrbQuMxjbSaFC3nwqFPo+zvoAHqWdQ==
+"@rootnative/inertia-gestures@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@rootnative/inertia-gestures/-/inertia-gestures-0.0.8.tgz#eeaa7f362b21af08164aeb6d6baf04342d454038"
+  integrity sha512-XdRRFZelvt8qZwP29PfUqIW1kRC/f1sXtKofLT7vYbLMfhrGpEBaDGdhn+lY/vm10HWEbiGr2W1w2tw+pQojNw==
 
-"@rootnative/inertia-svg@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@rootnative/inertia-svg/-/inertia-svg-0.0.6.tgz#c9804a50f475a965339d5ed29d1dff7aa8c49980"
-  integrity sha512-R1jMlfQeEKuAQJiy8NKUr5MsQK0c/e75ep2HZ48VLfuyn4OvSX1IPa4c14VogIQx4qv+TRzR/Kd0750FpQF1tw==
+"@rootnative/inertia-svg@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@rootnative/inertia-svg/-/inertia-svg-0.0.8.tgz#6eb166aa3b27c8344b4969478724bcc77be1d434"
+  integrity sha512-tOZtxWJSkwpnQVkLdzRcR7P3fx2CG2yQOnwyq0excw5kDvSmnAXy9hnbv9h6DA2PdhYsWG4yfiCzILaEnqCc6Q==
 
-"@rootnative/inertia@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@rootnative/inertia/-/inertia-0.0.6.tgz#d879294a06922579d62cb3eb76e93fa6bde86783"
-  integrity sha512-eOrXfAr1dSUa8PvQtV2XBYURmLXo8IorNBcjYE3Z623lzejc840j2xw7O0LTwu6XHotCtzW9EzSph8FJJ1iwuQ==
+"@rootnative/inertia@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@rootnative/inertia/-/inertia-0.0.8.tgz#fdec3a0d608f02bd13b57fd2a6b3e610c9a74af6"
+  integrity sha512-ak4pgHm3APNDo8QGZ7uXjxxrn7cTNND762yV7MlkcftR9zBY27pC//QLUaLCHsCE83bLcOJ2OxfUNhNMlBTmAA==
 
 "@sinclair/typebox@^0.27.8":
   version "0.27.12"
