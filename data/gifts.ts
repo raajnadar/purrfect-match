@@ -158,6 +158,12 @@ export interface GiftMatch {
    * result of `pickGifts`.
    */
   score: number
+  /**
+   * `score` as a percentage of the accepted traits, from 1 to 100. This is
+   * the number the app shows, because a bare count means nothing without the
+   * total: "3" is a strong match out of 4 traits and a weak one out of 9.
+   */
+  matchPercent: number
   /** The trait labels that matched, for the "because ..." line. */
   reasons: string[]
 }
@@ -169,6 +175,10 @@ export interface GiftMatch {
  * number of distinct traits it answers, so a gift that covers three answers
  * ranks above one that covers a single answer. A tie keeps catalogue order,
  * which keeps the list stable between runs.
+ *
+ * `matchPercent` scales the score against the number of accepted traits, so a
+ * gift that answers every trait reads as 100%. The percentage is the app's
+ * unit: the whole flow is a profile matched against a catalogue.
  *
  * Returns an empty array when no trait was accepted. The caller shows its own
  * empty state — this function does not invent a fallback gift.
@@ -186,7 +196,12 @@ export function pickGifts(
       .map((trait) => trait.label)
 
     if (reasons.length > 0) {
-      matches.push({ gift, score: reasons.length, reasons })
+      matches.push({
+        gift,
+        score: reasons.length,
+        matchPercent: Math.round((reasons.length / accepted.length) * 100),
+        reasons,
+      })
     }
   }
 

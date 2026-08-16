@@ -24,10 +24,15 @@ const HERO_HEIGHT = 240
 
 export default function GiftDetailScreen() {
   const theme = useTheme<PurrfectTheme>()
-  const { colors, motion, shape } = theme
+  const { colors, motion, purrfect, shape } = theme
 
-  const { id } = useLocalSearchParams<{ id: string }>()
+  const { id, match } = useLocalSearchParams<{ id: string; match?: string }>()
   const gift = GIFTS.find((item) => item.id === id)
+
+  // The sheet passes the score on the route. A gift opened by a direct link
+  // has no profile behind it, so the badge simply does not render.
+  const matchPercent = Number.parseInt(match ?? '', 10)
+  const hasMatch = Number.isFinite(matchPercent)
 
   const contentWidth = useBreakpointValue({
     compact: undefined,
@@ -100,6 +105,22 @@ export default function GiftDetailScreen() {
                   {`$${gift.price}`}
                 </Typography>
               </Row>
+
+              {hasMatch ? (
+                <Row gap="xs" align="center">
+                  <MaterialCommunityIcons
+                    name="heart"
+                    size={18}
+                    color={purrfect.yes.color}
+                  />
+                  <Typography
+                    variant="titleMediumEmphasized"
+                    color={purrfect.yes.color}
+                  >
+                    {`${matchPercent}% match for your cat`}
+                  </Typography>
+                </Row>
+              ) : null}
 
               <Typography variant="titleMedium" color={colors.onSurfaceVariant}>
                 {gift.tagline}

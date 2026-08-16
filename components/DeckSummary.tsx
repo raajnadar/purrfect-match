@@ -74,8 +74,8 @@ export function DeckSummary({
 
             <Typography variant="bodySmall" color={colors.onSurfaceVariant}>
               {accepted.length > 0
-                ? 'Open the gift list to see what matches these traits.'
-                : 'Gifts need at least one yes.'}
+                ? 'We scored every gift in the catalogue against this profile.'
+                : 'A match needs at least one yes.'}
             </Typography>
           </Column>
         </Card.Content>
@@ -84,8 +84,8 @@ export function DeckSummary({
             Start again
           </Button>
           {accepted.length > 0 ? (
-            <Button variant="filled" leadingIcon="gift-outline" onPress={onShowGifts}>
-              Gifts
+            <Button variant="filled" leadingIcon="heart" onPress={onShowGifts}>
+              See matches
             </Button>
           ) : null}
         </Card.Actions>

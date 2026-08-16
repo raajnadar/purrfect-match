@@ -69,8 +69,10 @@ export default function DeckScreen() {
 
   const openSheet = useCallback(() => setSheetOpen(true), [])
 
-  const handleSelectGift = useCallback((giftId: string) => {
-    router.push(`/gift/${giftId}`)
+  // The match strength rides along on the route, so the detail view keeps the
+  // framing without recomputing the profile from scratch.
+  const handleSelectGift = useCallback((giftId: string, matchPercent: number) => {
+    router.push(`/gift/${giftId}?match=${matchPercent}`)
   }, [])
 
   // The last card has to finish its fly-off before the sheet arrives. The

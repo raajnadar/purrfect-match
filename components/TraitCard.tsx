@@ -8,6 +8,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Card } from '@rootnative/components/card'
 import { Box, Column, Row } from '@rootnative/components/layout'
+import { Skeleton } from '@rootnative/components/skeleton'
 import { Typography } from '@rootnative/components/typography'
 import { useTheme } from '@rootnative/core'
 import { useState } from 'react'
@@ -15,7 +16,6 @@ import { Image, StyleSheet } from 'react-native'
 
 import type { Trait } from '../data/traits'
 import type { PurrfectTheme } from '../theme'
-import { Skeleton } from './Skeleton'
 
 interface TraitCardProps {
   trait: Trait
@@ -67,7 +67,11 @@ export function TraitCard({
             />
           ) : null}
 
-          {showSkeleton ? <Skeleton style={StyleSheet.absoluteFill} /> : null}
+          {showSkeleton ? (
+            // The media region is already clipped by the card, so the block
+            // needs no corners of its own.
+            <Skeleton shape="rectangle" style={StyleSheet.absoluteFill} />
+          ) : null}
 
           {showFallback ? (
             <Box style={styles.fallback}>
