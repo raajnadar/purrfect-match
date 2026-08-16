@@ -1,8 +1,9 @@
 /**
  * What the deck shows once every trait is answered.
  *
- * Phase 2 replaces this panel with the gift-reveal bottom sheet. It stands in
- * for now so the deck has a real end state and the swipe data is visible.
+ * The Phase 2 gift sheet opens over this panel on its own. The panel stays
+ * behind it, so a user who dismisses the sheet still sees the result and has a
+ * way back to the gifts.
  */
 import { Button } from '@rootnative/components/button'
 import { Card } from '@rootnative/components/card'
@@ -20,9 +21,16 @@ interface DeckSummaryProps {
   accepted: Trait[]
   total: number
   onRestart: () => void
+  /** Reopens the gift sheet after the user dismisses it. */
+  onShowGifts: () => void
 }
 
-export function DeckSummary({ accepted, total, onRestart }: DeckSummaryProps) {
+export function DeckSummary({
+  accepted,
+  total,
+  onRestart,
+  onShowGifts,
+}: DeckSummaryProps) {
   const theme = useTheme<PurrfectTheme>()
   const { colors, motion, purrfect } = theme
 
@@ -65,14 +73,21 @@ export function DeckSummary({ accepted, total, onRestart }: DeckSummaryProps) {
             )}
 
             <Typography variant="bodySmall" color={colors.onSurfaceVariant}>
-              Phase 2 turns these traits into gift recommendations.
+              {accepted.length > 0
+                ? 'Open the gift list to see what matches these traits.'
+                : 'Gifts need at least one yes.'}
             </Typography>
           </Column>
         </Card.Content>
         <Card.Actions align="end">
-          <Button variant="tonal" leadingIcon="restart" onPress={onRestart}>
+          <Button variant="text" leadingIcon="restart" onPress={onRestart}>
             Start again
           </Button>
+          {accepted.length > 0 ? (
+            <Button variant="filled" leadingIcon="gift-outline" onPress={onShowGifts}>
+              Gifts
+            </Button>
+          ) : null}
         </Card.Actions>
       </Card>
     </Motion.View>

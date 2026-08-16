@@ -9,6 +9,7 @@ import {
   NunitoSans_600SemiBold,
   NunitoSans_700Bold,
 } from '@expo-google-fonts/nunito-sans'
+import { PortalHost } from '@rootnative/components/portal'
 import { ThemeProvider } from '@rootnative/core'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
@@ -56,12 +57,16 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider theme={theme}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: theme.colors.background },
-          }}
-        />
+        {/* The Phase 2 bottom sheet renders through this host, so it has to
+            wrap the navigator. A host inside a screen cannot paint above it. */}
+        <PortalHost>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: theme.colors.background },
+            }}
+          />
+        </PortalHost>
         <StatusBar style={scheme === 'light' ? 'dark' : 'light'} />
       </ThemeProvider>
     </GestureHandlerRootView>

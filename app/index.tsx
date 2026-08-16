@@ -14,11 +14,13 @@ import { Box, Column, Layout, Row } from '@rootnative/components/layout'
 import { LinearProgress } from '@rootnative/components/progress'
 import { Typography } from '@rootnative/components/typography'
 import { useBreakpointValue, useTheme } from '@rootnative/core'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { router } from 'expo-router'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { DeckSummary } from '../components/DeckSummary'
+import { GiftSheet } from '../components/GiftSheet'
 import { PawPattern } from '../components/PawPattern'
 import { SwipeCard, type SwipeCardHandle } from '../components/SwipeCard'
 import { TRAITS, type Trait } from '../data/traits'
@@ -35,6 +37,7 @@ export default function DeckScreen() {
 
   const [index, setIndex] = useState(0)
   const [acceptedIds, setAcceptedIds] = useState<string[]>([])
+  const [sheetOpen, setSheetOpen] = useState(false)
   const topCard = useRef<SwipeCardHandle>(null)
 
   // A phone is `compact`. A tablet, a split view, and a browser window are
@@ -59,9 +62,24 @@ export default function DeckScreen() {
   }, [])
 
   const restart = useCallback(() => {
+    setSheetOpen(false)
     setAcceptedIds([])
     setIndex(0)
   }, [])
+
+  const openSheet = useCallback(() => setSheetOpen(true), [])
+
+  const handleSelectGift = useCallback((giftId: string) => {
+    router.push(`/gift/${giftId}`)
+  }, [])
+
+  // The last card has to finish its fly-off before the sheet arrives. The
+  // sheet is the reward for completing the deck, so it opens on its own.
+  useEffect(() => {
+    if (!done) return
+    const timer = setTimeout(() => setSheetOpen(true), 420)
+    return () => clearTimeout(timer)
+  }, [done])
 
   return (
     <Layout immersive style={[styles.root, { backgroundColor: colors.background }]}>
@@ -108,6 +126,7 @@ export default function DeckScreen() {
                 accepted={accepted}
                 total={TRAITS.length}
                 onRestart={restart}
+                onShowGifts={openSheet}
               />
             </Box>
           ) : (
@@ -160,6 +179,14 @@ export default function DeckScreen() {
           </Row>
         )}
       </Column>
+
+      <GiftSheet
+        visible={sheetOpen}
+        accepted={accepted}
+        onDismiss={() => setSheetOpen(false)}
+        onSelectGift={handleSelectGift}
+        onRestart={restart}
+      />
     </Layout>
   )
 }
